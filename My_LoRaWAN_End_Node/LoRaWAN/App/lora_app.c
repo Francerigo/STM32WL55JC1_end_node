@@ -555,8 +555,6 @@ static void SendTxData(void)
 {
   /* USER CODE BEGIN SendTxData_1 */
   LmHandlerErrorStatus_t status = LORAMAC_HANDLER_ERROR;
-  uint8_t batteryLevel = GetBatteryLevel();
-  sensor_t sensor_data;
   UTIL_TIMER_Time_t nextTxIn = 0;
   extern BMP280 mybmp280;
   float tempC = readTemperature(&mybmp280);
@@ -565,11 +563,6 @@ static void SendTxData(void)
 
   if (LmHandlerIsBusy() == false)
   {
-
-	    EnvSensors_Read(&sensor_data);
-
-	    APP_LOG(TS_ON, VLEVEL_M, "VDDA: %d\r\n", batteryLevel);
-	    APP_LOG(TS_ON, VLEVEL_M, "temp: %d\r\n", (int16_t)(sensor_data.temperature));
 
 	    AppData.Port = LORAWAN_USER_APP_PORT;
 
