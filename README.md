@@ -1,14 +1,36 @@
-# STM32WL55JC1_end_node
-Codes to implement a LoRaWAN end node starting from the example "LoRaWAN_End_Node"
+# STM32WL55JC1 End Node
 
-This repository serves as an help to understand and develop codes adopting the STM32WL55JC1 Nucleo Board as a LoRaWAN end node.
+This repository contains code implementations for a LoRaWAN end node using the STM32WL55JC1 Nucleo Board, starting from the example "LoRaWAN_End_Node" provided in STM32CubeIDE.
 
-The folder you find as End_Node setup just contains the files necessary to implement the example given in STM32 CUBE IDE ("LoRaWAN_End_Node").
+## Repository Structure
 
-After that, v01 offers a modified example where an I2C sensor is used (BMP280), and the end node sends data of its measured temperature and pressure through a library which has been written ad hoc. 
+### **End_Node_Setup**
+This folder includes the necessary files to implement the base example "LoRaWAN_End_Node" available in STM32CubeIDE. It serves as the starting point for further modifications.
 
-The libraries can be found at "".
+### **v01** - I2C Sensor Integration (BMP280)
+- This version modifies the base example to integrate an I2C sensor (BMP280).
+- The end node reads temperature and pressure data from the sensor and transmits it using a custom-written library.
+- The required libraries can be found at `""` (ensure to add the correct path to the libraries).
+- **Low power mode is disabled** in this version to prevent issues with the I2C sensor.
 
-In v01 the low power mode is disabled, so to avoid the i2c sensor encontering issues.
+### **v02** - Improved Low Power Management
+- This version enhances power management by properly handling low power mode.
+- The implementation ensures that the I2C sensor operates correctly while maintaining energy efficiency.
+- For a detailed explanation, refer to the `README` file inside the `v02` directory.
 
-v02 offers an upgraded version, where the low power mode is managed better. Read the readme file for a better understanding.
+---
+
+## Getting Started
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/your-repo-name.git
+   ```
+2. Open the project in **STM32CubeIDE**.
+3. Select the desired version (`v01` or `v02`) and flash it to the **STM32WL55JC1 Nucleo Board**.
+
+## Contributions
+Feel free to contribute by improving the existing code or adding new features. Open an issue or submit a pull request if you have any suggestions.
+
+## License
+This project is licensed under the MIT License. See the LICENSE file for details.
+
