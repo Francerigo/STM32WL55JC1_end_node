@@ -25,6 +25,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "bmp280.h"
+//prova per vedere che funzioni
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
