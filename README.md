@@ -7,3 +7,6 @@
 - When the buffer is full, the system sends via LoRaWAN a buf
 
 
+- Keep attention! If you are adding ADC channels, the .ioc file may not generate anymore the adc_if.h and adc_if.c files. To solve this issue, be sure that ADC is selected in the .ioc files under Middleware and Software Packs -> Platform settings
+- 
+
