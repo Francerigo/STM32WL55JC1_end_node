@@ -24,7 +24,7 @@
 
 /* USER CODE END 0 */
 
-extern I2C_HandleTypeDef hi2c1;
+I2C_HandleTypeDef hi2c1;
 
 /* I2C1 init function */
 void MX_I2C1_Init(void)

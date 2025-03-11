@@ -34,16 +34,33 @@
 #include "CayenneLpp.h"
 #include "sys_sensors.h"
 #include "flash_if.h"
-#include "bmp280.h"
-//#include "bmp280.c"
 
 /* USER CODE BEGIN Includes */
-//prova
+#include "bmp280.h"
+#include "stdbool.h"
+#include "stdio.h"
+#include "string.h"
+#include "comp.h"
+#include "stm32wlxx_hal_comp.h"
 /* USER CODE END Includes */
 
 /* External variables ---------------------------------------------------------*/
 /* USER CODE BEGIN EV */
+#define ARRAY_LENGTH 20
 
+uint32_t timestamp0;
+uint16_t values[ARRAY_LENGTH];
+char deb[50];
+uint16_t var;
+uint16_t max;
+uint8_t counter_pos = 0;
+uint8_t counter_neg = 0;
+bool slope_neg = false;
+bool acquire = false;
+uint16_t timestamp1;
+uint8_t buffer_index;
+
+extern COMP_HandleTypeDef hcomp1;
 /* USER CODE END EV */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -218,6 +235,18 @@ static void OnSystemReset(void);
 
 /* USER CODE BEGIN PFP */
 
+/**
+  * @brief  ADC peak acquisition function
+  * @note it's a blocking function; the system only performs the peak(s) acquisition
+  */
+static void acquirePeak(void);
+
+/**
+  * @brief  COMP callback function
+  * @param context of COMP context
+  */
+
+//void HAL_COMP_TriggerCallback(COMP_HandleTypeDef *context);
 /**
   * @brief  LED Tx timer callback function
   * @param  context ptr of LED context
@@ -397,6 +426,7 @@ void LoRaWAN_Init(void)
     Error_Handler();
   }
 
+  UTIL_SEQ_RegTask((1 << CFG_SEQ_Task_ADC_Acquisition), UTIL_SEQ_RFU, acquirePeak);
   /* USER CODE END LoRaWAN_Init_1 */
 
   UTIL_TIMER_Create(&StopJoinTimer, JOIN_TIME, UTIL_TIMER_ONESHOT, OnStopJoinTimerEvent, NULL);
@@ -442,6 +472,15 @@ void LoRaWAN_Init(void)
 
 /* USER CODE BEGIN PB_Callbacks */
 
+void HAL_COMP_TriggerCallback(COMP_HandleTypeDef *hcomp)
+{
+  UNUSED(hcomp);
+  UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_ADC_Acquisition), CFG_SEQ_Prio_0);
+
+  //UTILS_ENTER_CRITICAL_SECTION();
+  HAL_NVIC_DisableIRQ(COMP_IRQn);
+}
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
   switch (GPIO_Pin)
@@ -468,6 +507,61 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 
 /* Private functions ---------------------------------------------------------*/
 /* USER CODE BEGIN PrFD */
+void acquirePeak (){
+
+	while(HAL_COMP_GetOutputLevel(&hcomp1) == GPIO_PIN_SET){
+
+		HAL_ADC_Start(&hadc);
+		HAL_ADC_PollForConversion(&hadc,10);
+	    /*if (HAL_ADC_PollForConversion(&hadc,10) != HAL_OK){
+	      sprintf(deb, "Errore lettura");
+	      HAL_UART_Transmit(&huart2,(uint8_t *)deb,strlen(deb),10);
+	    }*/
+	    var = HAL_ADC_GetValue(&hadc);
+
+	    if(var > values[0]){
+	    	counter_pos++;
+	    	counter_neg = 0;
+	    	if(var>values[ARRAY_LENGTH-1]){
+	        //max = (float)var*3.3/4095;
+	        max = var;
+	    	}
+	    	for(uint8_t i = ARRAY_LENGTH-1; i>0; i--){
+	    		values[i-1] = values [i];
+	    	}
+	    	values[ARRAY_LENGTH-1] = var;
+	    	if(counter_pos >= 5 && slope_neg){
+	    		slope_neg = false;
+	    	}
+	    }
+	    else{
+	    	counter_pos=0;
+	    	counter_neg++;
+	    	for(uint8_t i = ARRAY_LENGTH-1; i>0; i--){
+	    		values[i-1] = values [i];
+	    	}
+	    	values[ARRAY_LENGTH-1] = var;
+	    	if(counter_neg >= 5 && !slope_neg){
+	    		slope_neg = true;
+				timestamp1 = HAL_GetTick()-timestamp0;
+				timestamp0 = HAL_GetTick();
+				AppDataBuffer[buffer_index++] = (uint8_t)(max & 0xFF);
+				AppDataBuffer[buffer_index++] = (uint8_t)((max >> 8) & 0xFF);
+				AppDataBuffer[buffer_index++] = (uint8_t)(timestamp1 & 0xFF);
+				AppDataBuffer[buffer_index++] = (uint8_t)((timestamp1 >> 8) & 0xFF);
+				AppData.BufferSize = buffer_index;
+				if(buffer_index >= 32){
+					//UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_LoRaSendOnTxTimerOrButtonEvent), CFG_SEQ_Prio_0);
+					SendTxData();
+					buffer_index = 0;
+					break;
+				}
+	    	}
+	    }
+	}
+	//UTILS_EXIT_CRITICAL_SECTION();
+	HAL_NVIC_EnableIRQ(COMP_IRQn);
+}
 
 /* USER CODE END PrFD */
 
@@ -556,17 +650,17 @@ static void SendTxData(void)
   /* USER CODE BEGIN SendTxData_1 */
   LmHandlerErrorStatus_t status = LORAMAC_HANDLER_ERROR;
   UTIL_TIMER_Time_t nextTxIn = 0;
-  extern BMP280 mybmp280;
+  /*extern BMP280 mybmp280;
   float tempC = readTemperature(&mybmp280);
   float press = readPressure(&mybmp280);
-  uint32_t i = 0;
+  uint32_t i = 0;*/
 
   if (LmHandlerIsBusy() == false)
   {
 
 	    AppData.Port = LORAWAN_USER_APP_PORT;
 
-	    union {
+	/*    union {
 	       float f;
 	       uint8_t bytes[4];
 	     } tempUnion;
@@ -591,7 +685,7 @@ static void SendTxData(void)
 	     }
 
 	     AppData.BufferSize = i;
-
+*/
     if ((JoinLedTimer.IsRunning) && (LmHandlerJoinStatus() == LORAMAC_HANDLER_SET))
     {
       UTIL_TIMER_Stop(&JoinLedTimer);
@@ -628,7 +722,7 @@ static void OnTxTimerEvent(void *context)
   /* USER CODE BEGIN OnTxTimerEvent_1 */
 
   /* USER CODE END OnTxTimerEvent_1 */
-  UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_LoRaSendOnTxTimerOrButtonEvent), CFG_SEQ_Prio_0);
+  //UTIL_SEQ_SetTask((1 << CFG_SEQ_Task_LoRaSendOnTxTimerOrButtonEvent), CFG_SEQ_Prio_0);
 
   /*Wait for next tx slot*/
   UTIL_TIMER_Start(&TxTimer);

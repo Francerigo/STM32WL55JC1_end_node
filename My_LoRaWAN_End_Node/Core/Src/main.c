@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "comp.h"
 #include "i2c.h"
 #include "app_lorawan.h"
 #include "gpio.h"
@@ -25,6 +26,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "bmp280.h"
+#include "adc_if.h"
+
+
 //prova per vedere che funzioni
 /* USER CODE END Includes */
 
@@ -46,8 +50,12 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-I2C_HandleTypeDef hi2c1;
+
+extern I2C_HandleTypeDef hi2c1;
 BMP280 mybmp280;
+extern ADC_HandleTypeDef hadc;
+extern COMP_HandleTypeDef hcomp1;
+extern uint32_t timestamp0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -85,15 +93,21 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  //HAL_COMP_MspInit(&hcomp1);
+  //HAL_ADC_MspInit (&hadc);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_LoRaWAN_Init();
   MX_I2C1_Init();
+  MX_COMP1_Init();
   /* USER CODE BEGIN 2 */
+  MX_ADC_Init();
   BMP280_init (&mybmp280, &hi2c1);
+  HAL_COMP_Start(&hcomp1);
+  HAL_ADCEx_Calibration_Start(&hadc);
+  timestamp0 = HAL_GetTick();
   /* USER CODE END 2 */
 
   /* Infinite loop */
