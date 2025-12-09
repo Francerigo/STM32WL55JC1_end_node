@@ -8,7 +8,7 @@ Here below you find both the description of the complete repository, and the des
 ## **"setup_files" branch**
 This folder includes the necessary files to implement the base example "LoRaWAN_End_Node" available in STM32CubeIDE. It serves as the starting point for further modifications.
 
-## **"main" branch** - I2C Sensor Integration (BMP280)
+## **"end_node_bmp280" branch** - I2C Sensor Integration (BMP280)
 - This version modifies the base example to integrate an I2C sensor (BMP280).
 - The end node reads temperature and pressure data from the sensor and transmits it using a custom-written library.
 - The required libraries can be found at `""` (ensure to add the correct path to the libraries).
