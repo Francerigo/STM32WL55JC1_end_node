@@ -11,8 +11,7 @@ This folder includes the necessary files to implement the base example "LoRaWAN_
 ## **"end_node_bmp280" branch** - I2C Sensor Integration (BMP280)
 - This version modifies the base example to integrate an I2C sensor (BMP280).
 - The end node reads temperature and pressure data from the sensor and transmits it using a custom-written library.
-- The required libraries can be found at `""` (ensure to add the correct path to the libraries).
-- **Low power mode is enabled** and properly handled.
+- **Low power mode (STOP2) is enabled** and properly handled.
 
 ## **"end_node_with_comparator_and_ADC" branch** - Voltage peak detector with comparator and ADC
 - This version is an end node project, programmed to do peak detection
