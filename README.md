@@ -1,4 +1,37 @@
-Here's a refined step-by-step guide for setting up the STM32WL55JC1 Nucleo Board as a LoRaWAN End-Node in STM32CubeIDE.
+# STM32WL55JC1 End Node
+
+This repository contains code implementations for a LoRaWAN end node using the STM32WL55JC1 Nucleo Board, starting from the example "LoRaWAN_End_Node" provided in STM32CubeIDE.
+
+## Repository Structure
+
+### **"setup_files" branch**
+This folder includes the necessary files to implement the base example "LoRaWAN_End_Node" available in STM32CubeIDE. It serves as the starting point for further modifications.
+
+### **"main" branch** - I2C Sensor Integration (BMP280)
+- This version modifies the base example to integrate an I2C sensor (BMP280).
+- The end node reads temperature and pressure data from the sensor and transmits it using a custom-written library.
+- The required libraries can be found at `""` (ensure to add the correct path to the libraries).
+- **Low power mode is enabled** and properly handled.
+
+### **"end_node_with_comparator_and_ADC" branch** - Voltage peak detector with comparator and ADC
+- This version is an end node project, programmed to do peak detection
+- It uses a comparator, to act as a trigger for ADC acquisition
+- It acquires a voltage peak, and saves data on buffers, to be transmitted through LoRaWAN
+
+## Getting Started
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/your-repo-name.git
+   ```
+2. Open the project in **STM32CubeIDE**.
+3. Select the desired version (`v01` or `v02`) and flash it to the **STM32WL55JC1 Nucleo Board**.
+
+## Contributions
+Feel free to contribute by improving the existing code or adding new features. Open an issue or submit a pull request if you have any suggestions.
+
+## License
+This project is licensed under the MIT License. See the LICENSE file for details.
+
 
 ---
 
