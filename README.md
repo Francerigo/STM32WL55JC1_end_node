@@ -1,4 +1,4 @@
-# BMP280 end node with STM32WL55JC1 Nucleo boar
+# BMP280 end node with STM32WL55JC1 Nucleo board
 
 ## Working operation
 1. Under Core > Src > stm32_lpm_if you can find all the functions regulating the entering and exiting low powr modes (standy, off, stop).
