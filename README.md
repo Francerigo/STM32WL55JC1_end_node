@@ -1,4 +1,4 @@
-# **v03** - STM32 end node operation for bees charge monitoring
+# STM32 end node operation for bees charge monitoring
 
 - This version includes analog comparator and ADC
 - The comparator triggers an interrupt when the sensed charge surpasses a certain threshold
