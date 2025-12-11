@@ -1,7 +1,4 @@
-# **v02** - Improved Low Power Management
-
-- This version enhances power management by properly handling low power mode.
-- The implementation ensures that the I2C sensor operates correctly while maintaining energy efficiency.
+# BMP280 end node with STM32WL55JC1 Nucleo boar
 
 ## Working operation
 1. Under Core > Src > stm32_lpm_if you can find all the functions regulating the entering and exiting low powr modes (standy, off, stop).
